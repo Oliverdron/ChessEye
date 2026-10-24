@@ -3,6 +3,7 @@ import type {
   CanvasRef, CornersRef, ModelRefs, SetBoolean, SetStringArray, SidebarRef, VideoRef
 } from "../../types";
 import HandshakeControl from "./handshakeControl"; // CS3483 addition
+import { useMoveSound } from "./useMoveSound"; // CS3483 addition
 
 const RecordSidebar = ({ piecesModelRef, xcornersModelRef, videoRef, canvasRef, sidebarRef, 
   playing, setPlaying, text, setText, cornersRef }: {
@@ -15,6 +16,7 @@ const RecordSidebar = ({ piecesModelRef, xcornersModelRef, videoRef, canvasRef, 
   text: string[], setText: SetStringArray,
   cornersRef: CornersRef
 }) => {
+  useMoveSound(playing); // CS3483 addition: click sound when a move is recorded
   const inputStyle = {
     display: playing ? "none": "inline-block"
   }

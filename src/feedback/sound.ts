@@ -1,7 +1,7 @@
 // CS3483 addition: short audio cues generated with the Web Audio API (no audio files).
-// Add new cues (e.g. "move", "illegal") to CUES for future move-recorded / warning sounds.
+// Add new cues (e.g. "illegal") to CUES for future warning sounds.
 
-export type SoundCue = "start" | "end" | "warning";
+export type SoundCue = "start" | "end" | "warning" | "moveWhite" | "moveBlack";
 
 interface Tone {
   frequency: number; // Hz
@@ -16,7 +16,10 @@ const CUES: Record<SoundCue, { tones: Tone[], wave: OscillatorType }> = {
   // Falling G5 -> C5
   end: { tones: [{ frequency: 783.99, duration: 0.15 }, { frequency: 523.25, duration: 0.3 }], wave: "sine" },
   // Two low buzzes
-  warning: { tones: [{ frequency: 220, duration: 0.12 }, { frequency: 0, duration: 0.06 }, { frequency: 220, duration: 0.12 }], wave: "square" }
+  warning: { tones: [{ frequency: 220, duration: 0.12 }, { frequency: 0, duration: 0.06 }, { frequency: 220, duration: 0.12 }], wave: "square" },
+  // Short click when a move is recorded: higher for White (C6), lower for Black (G5)
+  moveWhite: { tones: [{ frequency: 1046.5, duration: 0.08 }], wave: "triangle" },
+  moveBlack: { tones: [{ frequency: 783.99, duration: 0.08 }], wave: "triangle" }
 };
 
 let context: AudioContext | null = null;
