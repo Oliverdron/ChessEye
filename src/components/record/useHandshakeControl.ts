@@ -22,6 +22,20 @@ export const cornersFound = (c: CornersDict): boolean => !(
   c.a1[0] === c.a8[0] && c.h1[0] === c.h8[0] && c.a1[1] === c.h1[1] && c.a8[1] === c.h8[1]
 );
 
+// ChessCam's piece detection only works when a1 -> h1 -> h8 -> a8 runs anticlockwise on screen
+// (negative signed area, y pointing down). With mirrored labels it rejects every piece, so
+// recording would "start" but never record a move.
+export const cornersMirrored = (c: CornersDict): boolean => {
+  const points = [c.a1, c.h1, c.h8, c.a8];
+  let area = 0;
+  for (let i = 0; i < points.length; i++) {
+    const [x1, y1] = points[i];
+    const [x2, y2] = points[(i + 1) % points.length];
+    area += (x1 * y2) - (x2 * y1);
+  }
+  return area > 0;
+};
+
 export interface HandshakeControlState {
   status: HandTrackingStatus;
   handsSeen: number;
@@ -78,6 +92,12 @@ export const useHandshakeControl = ({ videoRef, cornersRef, playing, setPlaying,
 
     if (!cornersFound(cornersRef.current)) {
       announce("Find the board corners first", "warning", "Find the board corners first");
+      return;
+    }
+
+    if (cornersMirrored(cornersRef.current)) {
+      announce("Corner labels are mirrored – press Find Corners again", "warning",
+        "The corners are mirrored. Find the corners again");
       return;
     }
 
