@@ -219,7 +219,36 @@ const euclidean = (a: number[], b: number[]) => {
   return dist;
 }
 
+// CS3483 addition: signed (shoelace) area of a polygon in image coordinates (y points down)
+const signedArea = (points: number[][]) => {
+  let area = 0;
+  for (let i = 0; i < points.length; i++) {
+    const [x1, y1] = points[i];
+    const [x2, y2] = points[(i + 1) % points.length];
+    area += (x1 * y2) - (x2 * y1);
+  }
+  return area / 2;
+}
+
 const calculateKeypoints = (blackPieces: number[][], whitePieces: number[][], corners: number[][]) => {
+  // CS3483 addition: findCornersFromXcorners returns the corners in either direction, but
+  // findPieces (getSquares) only keeps pieces inside the board when a1 -> h1 -> h8 -> a8 has a
+  // negative signed area. With the other direction the labels come out mirrored and EVERY
+  // piece is rejected, so no moves are ever recorded. Always use the direction findPieces expects.
+  if (signedArea(corners) > 0) {
+    corners = [corners[0], corners[3], corners[2], corners[1]];
+  }
+
+  // CS3483 addition: vote for White's side: count white pieces in the half of the board next to
+  // the candidate edge and black pieces in the other half. This is more robust than the distance
+  // to colour centres below (kept as a tie-breaker), which drift to the middle when some pieces
+  // are given the wrong colour. Board coordinates: corners 0..3 -> (0,0), (1,0), (1,1), (0,1).
+  const toBoard = getPerspectiveTransform([[0, 0], [1, 0], [1, 1], [0, 1]], corners);
+  const whiteOnBoard = perspectiveTransform(whitePieces.map(p => [p[0], p[1]]), toBoard);
+  const blackOnBoard = perspectiveTransform(blackPieces.map(p => [p[0], p[1]]), toBoard);
+  // Distance from White's edge (0 = on it, 1 = opposite edge) when a1-h1 is corners[shift]-corners[shift+1]
+  const distanceFromWhiteEdge = (p: number[], shift: number) => [p[1], 1 - p[0], 1 - p[1], p[0]][shift];
+
   const blackCenter = getCenter(blackPieces);
   const whiteCenter = getCenter(whitePieces);
 
@@ -230,7 +259,10 @@ const calculateKeypoints = (blackPieces: number[][], whitePieces: number[][], co
     (corners[shift % 4][1] + corners[(shift + 1) % 4][1]) / 2];
     const cb = [(corners[(shift + 2) % 4][0] + corners[(shift + 3) % 4][0]) / 2,
     (corners[(shift + 2) % 4][1] + corners[(shift + 3) % 4][1]) / 2];
-    const score = 1 / (1 + euclidean(whiteCenter, cw) + euclidean(blackCenter, cb));
+    // CS3483 addition: votes first (whole numbers), original score (between 0 and 1) breaks ties
+    const votes = whiteOnBoard.filter(p => distanceFromWhiteEdge(p, shift) < 0.5).length
+      + blackOnBoard.filter(p => distanceFromWhiteEdge(p, shift) > 0.5).length;
+    const score = votes + (1 / (1 + euclidean(whiteCenter, cw) + euclidean(blackCenter, cb)));
     if (score > bestScore) {
       bestScore = score;
       bestShift = shift;

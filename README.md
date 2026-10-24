@@ -40,6 +40,11 @@ Our group project adds a multimodal interaction layer on top of it, under the sa
 - A short click plays each time a move is recorded (ChessCam only accepts legal moves): a higher click
   for White, a lower one for Black, so players hear that their move registered without looking at the screen.
 
+**Fix in ChessCam's corner labelling** (`src/utils/findCorners.tsx`)
+- "Find Corners" sometimes returned mirrored corner labels. Piece detection then silently rejected every
+  piece, so recording "started" but no moves were ever recorded. The labels now always run in the
+  direction piece detection expects, and White's side is chosen by a majority vote of piece colours.
+
 Code: `src/gestures/` (shared hand-tracking loop, hold/cooldown logic, handshake detector with tunable
 thresholds at the top of `handshake.ts`), `src/feedback/` (sound and speech), `src/components/record/handshakeControl.tsx`,
 `useHandshakeControl.ts` and `useMoveSound.ts`. Edits to original ChessCam files are marked with `CS3483 addition`.
