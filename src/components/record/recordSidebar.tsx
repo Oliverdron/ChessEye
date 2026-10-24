@@ -2,6 +2,7 @@ import { CornersButton, Sidebar, RecordButton, StopButton, FenButton, DeviceButt
 import type {
   CanvasRef, CornersRef, ModelRefs, SetBoolean, SetStringArray, SidebarRef, VideoRef
 } from "../../types";
+import HandshakeControl from "./handshakeControl"; // CS3483 addition
 
 const RecordSidebar = ({ piecesModelRef, xcornersModelRef, videoRef, canvasRef, sidebarRef, 
   playing, setPlaying, text, setText, cornersRef }: {
@@ -36,6 +37,9 @@ const RecordSidebar = ({ piecesModelRef, xcornersModelRef, videoRef, canvasRef, 
           <StopButton setPlaying={setPlaying} setText={setText} />
         </div>
       </li>
+      {/* CS3483 addition: handshake gesture to start / end the game */}
+      <HandshakeControl videoRef={videoRef} cornersRef={cornersRef} playing={playing}
+        setPlaying={setPlaying} setText={setText} />
     </Sidebar>
   );
 };

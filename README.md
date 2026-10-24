@@ -20,6 +20,26 @@ Do you have ideas, bugs to report or training footage? Join our [Discord Server]
 
 </div>
 
+## Our modifications (CS3483 Multimodal Interface Design, CityU)
+
+This repository is a fork of [ChessCam](https://github.com/Pbatch/CameraChessWeb) by Pbatch and contributors,
+licensed under the GNU AGPL-3.0 (see `LICENSE.md`). ChessCam provides the board, piece and move recognition.
+Our group project adds a multimodal interaction layer on top of it, under the same licence.
+
+**Handshake to start and end a game** (record page)
+- Players shake hands over the board, just as in a real game. MediaPipe Hand Landmarker (`@mediapipe/tasks-vision`)
+  tracks up to two hands on the same camera feed, in its own ~12 fps loop separate from ChessCam's piece detection.
+- 1st handshake starts recording, 2nd handshake ends the game (moves are kept, so "Copy PGN" still works),
+  a handshake after a finished game starts a new one. If the board corners have not been found yet, the
+  handshake is refused with a warning.
+- Feedback on several channels: status text, a sidebar indicator (tracking on/off, hands seen, handshake
+  progress bar), a short Web Audio beep, and spoken confirmation via speech synthesis.
+- The Play / Stop buttons still work as a manual fallback, and handshake control can be switched off in the sidebar.
+
+Code: `src/gestures/` (shared hand-tracking loop, hold/cooldown logic, handshake detector with tunable
+thresholds at the top of `handshake.ts`), `src/feedback/` (sound and speech), `src/components/record/handshakeControl.tsx`
+and `useHandshakeControl.ts`. Edits to original ChessCam files are marked with `CS3483 addition`.
+
 ## Demo
 [<img src="https://raw.githubusercontent.com/wiki/Pbatch/CameraChessWeb/images/thumbnail.png" width="100%">](https://youtu.be/AAs4EX372bc)
 

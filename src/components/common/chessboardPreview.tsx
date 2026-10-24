@@ -98,7 +98,8 @@ const ChessboardPreview = ({ fen, squareSize = 20, lastMove = null }: Chessboard
       aria-label={`Current chess position: ${positionDescription || "empty board"}`}
     >
       {board.map(({ coordinate, piece }, index) => {
-        const isLastMove = (coordinate == from) || (coordinate == to);
+        // CS3483 addition: == changed to === so `npm run build` (biome lint) passes
+        const isLastMove = (coordinate === from) || (coordinate === to);
 
         return (<span
           key={coordinate}
