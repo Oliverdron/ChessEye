@@ -7,6 +7,7 @@ import App from "./App";
 
 import { createRoot } from 'react-dom/client';
 import "./style/index.css";
+import "./style/redesign.css"; // CS3483 addition
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from 'react-redux';
 import store from "./store.tsx";
@@ -14,6 +15,7 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { registerSW } from "virtual:pwa-register";
 import { VideoAndSidebar } from './components/common';
+import RecordPage from "./components/record/recordPage"; // CS3483 addition
 
 // add this to prompt for a refresh
 const updateSW = registerSW({
@@ -35,8 +37,9 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        // CS3483 addition: redesigned record flow (setup wizard, recording, game over)
         path: "/record",
-        element: <VideoAndSidebar mode="record" />
+        element: <RecordPage />
       },
       {
         path: "/upload",

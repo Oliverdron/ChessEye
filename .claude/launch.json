@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "chesscam-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--", "--port", "5173", "--strictPort"],
+      "port": 5173
+    }
+  ]
+}

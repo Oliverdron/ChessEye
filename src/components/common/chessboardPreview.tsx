@@ -29,6 +29,8 @@ type ChessboardPreviewProps = {
   fen: string;
   squareSize?: number;
   lastMove: string | null;
+  // CS3483 addition: fill the parent's width and show a-h / 1-8 coordinates
+  fluid?: boolean;
 };
 
 const emptyBoard = (): BoardSquare[] => Array.from({ length: 64 }, (_, index) => ({
@@ -75,24 +77,24 @@ const parseFen = (fen: string): BoardSquare[] => {
   return board;
 };
 
-const ChessboardPreview = ({ fen, squareSize = 20, lastMove = null }: ChessboardPreviewProps) => {
+const ChessboardPreview = ({ fen, squareSize = 20, lastMove = null, fluid = false }: ChessboardPreviewProps) => {
   const board = parseFen(fen);
   const positionDescription = board
     .filter((square): square is BoardSquare & { piece: PieceCode } => square.piece !== undefined)
     .map(({ coordinate, piece }) => `${PIECES[piece].label} on ${coordinate}`)
     .join(", ");
-  const style = {
+  const style = (fluid ? {} : {
     "--chess-square-size": `${squareSize}px`,
     width: squareSize * 8,
     height: squareSize * 8,
-  } as CSSProperties;
+  }) as CSSProperties;
 
   const from = lastMove?.slice(0, 2);
   const to = lastMove?.slice(2, 4);
 
   return (
     <div
-      className="chessboard-preview mx-auto"
+      className={`chessboard-preview mx-auto${fluid ? " chessboard-preview--fluid" : ""}`}
       style={style}
       role="img"
       aria-label={`Current chess position: ${positionDescription || "empty board"}`}
@@ -117,6 +119,8 @@ const ChessboardPreview = ({ fen, squareSize = 20, lastMove = null }: Chessboard
               draggable={false}
             />
           )}
+          {fluid && index >= 56 && <span className="chessboard-preview__file">{coordinate[0]}</span>}
+          {fluid && index % 8 === 0 && <span className="chessboard-preview__rank">{coordinate[1]}</span>}
         </span>);
       })}
     </div>

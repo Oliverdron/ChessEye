@@ -298,20 +298,21 @@ export const _findCorners = async (
   const blackPieces = pieces.filter(x => (x[2] <= 5));
   const whitePieces = pieces.filter(x => (x[2] > 5));
   if ((blackPieces.length === 0) || (whitePieces.length === 0)) {
-    setText(["No pieces to label corners"]);
+    // CS3483 addition: messages say what went wrong and how to fix it
+    setText(["Can't see the pieces", "ChessCam uses the pieces to tell the corners apart. Set up the pieces, keep hands off the board and try again."]);
     return;
   }
 
   const xCorners = await runXcornersModel(videoRef, xcornersModelRef, pieces);
   if (xCorners.length < 5) {
     // With <= 5 xCorners, no quads are found
-    setText(["Need ≥5 xCorners", `Detected ${xCorners.length}`]);
+    setText(["Can't see enough of the board", "Make sure all 64 squares are in view and well lit, then try again."]);
     return;
   }
 
   const corners = findCornersFromXcorners(xCorners);
   if (corners === undefined) {
-    setText(["Failed to find corners"]);
+    setText(["Couldn't find the four corners", "Move the camera so the whole board is visible, or drag the corner markers into place."]);
     return;
   }
 

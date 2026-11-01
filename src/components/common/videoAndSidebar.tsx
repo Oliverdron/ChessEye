@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { cornersReset, useCorners } from '../../slices/cornersSlice';
 import { Container } from "../common";
 import type { CornersDict, Mode, ModelRefs, Study } from "../../types";
-import RecordSidebar from "../record/recordSidebar";
 import UploadSidebar from "../upload/uploadSidebar";
 import BroadcastSidebar from "../broadcast/broadcastSidebar";
 import { gameResetFen, gameResetMoves, gameResetStart, useGame } from "../../slices/gameSlice";
@@ -96,7 +95,8 @@ const VideoAndSidebar = ({ mode }: { mode: Mode }) => {
   }
   const Sidebar = () => {
     switch(mode) {
-      case "record": return <RecordSidebar {...props} />
+      // CS3483 addition: /record now uses its own page (components/record/recordPage.tsx)
+      case "record": return null
       case "upload": return <UploadSidebar {...props} />
       case "play": return <PlaySidebar {...props} />
       case "broadcast": return <BroadcastSidebar {...props} />

@@ -36,16 +36,22 @@ const getMoveText = (board: CameraChessBoard): string => {
 }
 
 const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
-  setPlaying, playingRef, setText, mode, cornersRef }: {
+  setPlaying, playingRef, setText, mode, cornersRef, fitRef, maxHeight, showMarkers = true, onCameraError }: {
     piecesModelRef: ModelRefs["piecesModelRef"],
     canvasRef: CanvasRef,
     videoRef: VideoRef,
-    sidebarRef: SidebarRef,
+    sidebarRef?: SidebarRef,
     playing: boolean,
     setPlaying: SetBoolean,
     playingRef: React.RefObject<boolean>,
     setText: SetStringArray, mode: Mode,
-    cornersRef: CornersRef
+    cornersRef: CornersRef,
+    // CS3483 addition: size the video to fit this element's width instead of
+    // "window width minus sidebar", capped at maxHeight (px). Used by the record page.
+    fitRef?: React.RefObject<HTMLDivElement | null>,
+    maxHeight?: number,
+    showMarkers?: boolean,
+    onCameraError?: (error: unknown) => void
   }) => {
   const game: Game = useGame();
 
@@ -72,19 +78,33 @@ const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
     lastMoveRef.current = game.lastMove;
   }, [game])
 
+  const reportCameraError = useEffectEvent((error: unknown) => onCameraError?.(error));
+
   const updateWidthHeight = useEffectEvent(() => {
-    const sidebar = sidebarRef.current;
     const canvas = canvasRef.current;
     const display = displayRef.current;
     const video = videoRef.current;
-    if (sidebar === null || canvas === null || display === null || video === null) {
+    if (canvas === null || display === null || video === null) {
       return;
     }
 
-    let height = ((windowWidth - sidebar.offsetWidth - MARKER_DIAMETER)
+    // CS3483 addition: fit mode (record page) uses the width of fitRef
+    const fit = fitRef?.current ?? null;
+    const sidebar = sidebarRef?.current ?? null;
+    let availableWidth: number;
+    if (fit !== null) {
+      availableWidth = fit.clientWidth;
+    } else if (sidebar !== null) {
+      availableWidth = windowWidth - sidebar.offsetWidth;
+    } else {
+      return;
+    }
+
+    let height = ((availableWidth - MARKER_DIAMETER)
       / MEDIA_ASPECT_RATIO) + MARKER_DIAMETER;
-    if (height > windowHeight) {
-      height = windowHeight;
+    const heightLimit = maxHeight ?? windowHeight;
+    if (height > heightLimit) {
+      height = heightLimit;
     }
 
     if ((canvas.offsetHeight === 0) || (canvas.offsetWidth) === 0) {
@@ -112,8 +132,9 @@ const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
 
   useEffect(() => {
     updateWidthHeight();
+    const video = videoRef.current;
 
-    let streamPromise: Promise<MediaStream> | null = null;
+    let streamPromise: Promise<MediaStream | null> | null = null;
     if (mode !== "upload") {
       streamPromise = navigator.mediaDevices.getUserMedia(MEDIA_CONSTRAINTS)
         .then((stream) => {
@@ -122,6 +143,12 @@ const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
           }
           return stream;
         });
+      // CS3483 addition: report a blocked or missing camera instead of failing silently
+      streamPromise = streamPromise.catch((error: unknown) => {
+        console.error("Unable to start the camera", error);
+        reportCameraError(error);
+        return null;
+      });
     }
 
     const stopDetection = findPieces(piecesModelRef, videoRef, canvasRef, playingRef, setText, dispatch,
@@ -131,6 +158,13 @@ const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
       const stream = await streamPromise;
       if (stream !== null) {
         stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+      // CS3483 addition: also stop a stream from a camera chosen later in the session
+      const current = video?.srcObject;
+      if (current instanceof MediaStream) {
+        current.getTracks().forEach((track) => {
           track.stop();
         });
       }
@@ -145,7 +179,25 @@ const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
   // biome-ignore lint/correctness/useExhaustiveDependencies: window size changes intentionally trigger this effect event.
   useEffect(() => {
     updateWidthHeight();
-  }, [windowWidth, windowHeight]);
+  }, [windowWidth, windowHeight, maxHeight]);
+
+  // CS3483 addition: on the record page the camera moves between layouts, so follow
+  // the size of its container, not just the window.
+  useEffect(() => {
+    const fit = fitRef?.current ?? null;
+    if (fit === null) {
+      return;
+    }
+    let lastWidth = fit.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (fit.clientWidth !== lastWidth) {
+        lastWidth = fit.clientWidth;
+        updateWidthHeight();
+      }
+    });
+    observer.observe(fit);
+    return () => observer.disconnect();
+  }, [fitRef]);
 
   useEffect(() => {
     if (canPlay) {
@@ -272,7 +324,7 @@ const Video = ({ piecesModelRef, canvasRef, videoRef, sidebarRef, playing,
             onCanPlay={onCanPlay} onLoadStart={onLoadStart} onError={onError} onEnded={onEnded} />
           <canvas ref={canvasRef} style={canvasStyle} />
         </div>
-        <Corners />
+        {showMarkers && <Corners />}
       </div>
     </div>
   );

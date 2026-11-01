@@ -77,6 +77,19 @@ const gameSlice = createSlice({
     },
     gameSetClock(state, action) {
       state.clock = action.payload;
+    },
+    // CS3483 addition: take back the last recorded move (record page)
+    gameTakeBack(state) {
+      const board = makeBoard(state);
+      if (board.history.length === 0) {
+        return;
+      }
+      board.undo();
+      const payload = makeUpdatePayload(board);
+      state.moves = payload.moves;
+      state.fen = payload.fen;
+      state.lastMove = payload.lastMove;
+      state.greedy = false;
     }
   }
 })
@@ -195,6 +208,6 @@ export const {
   gameSetFen, gameResetFen,
   gameSetStart, gameResetStart,
   gameSetLastMove, gameResetLastMove,
-  gameUpdate, gameSetError, gameSetClock
+  gameUpdate, gameSetError, gameSetClock, gameTakeBack
 } = gameSlice.actions
 export default gameSlice.reducer
