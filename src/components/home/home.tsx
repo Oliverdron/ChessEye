@@ -61,7 +61,7 @@ const Home = () => {
     <div className="cc">
       <div className="cc-home">
         <header className="cc-home__header">
-          <div className="cc-brand"><Logo />ChessCam</div>
+          <div className="cc-brand"><Logo />ChessEye</div>
           <nav aria-label="Account and help" className="d-flex flex-wrap align-items-center gap-2">
             <Link to="/faq" className="d-inline-flex align-items-center px-2" style={{ minHeight: 48, fontWeight: 500 }}>
               Help &amp; FAQ
@@ -79,7 +79,7 @@ const Home = () => {
               <h1>Record your game on a real board</h1>
               <p className="cc-hero__lead">
                 Put a phone or webcam above the board. Shake hands to start, shake hands again to
-                finish. ChessCam writes down every move.
+                finish. ChessEye writes down every move.
               </p>
               <div className="cc-actions" style={{ gap: 16, marginTop: 8 }}>
                 <Link to="/record" className="cc-btn cc-btn--primary cc-btn--xl">

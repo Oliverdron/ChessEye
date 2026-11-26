@@ -299,7 +299,7 @@ export const _findCorners = async (
   const whitePieces = pieces.filter(x => (x[2] > 5));
   if ((blackPieces.length === 0) || (whitePieces.length === 0)) {
     // CS3483 addition: messages say what went wrong and how to fix it
-    setText(["Can't see the pieces", "ChessCam uses the pieces to tell the corners apart. Set up the pieces, keep hands off the board and try again."]);
+    setText(["Can't see the pieces", "ChessEye uses the pieces to tell the corners apart. Set up the pieces, keep hands off the board and try again."]);
     return;
   }
 

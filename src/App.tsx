@@ -36,7 +36,7 @@ const App = () => {
       .then(() => setLoading(false))
       .catch((error: unknown) => {
         console.error("Failed to load TensorFlow models", error);
-        setLoadError("ChessCam could not load its board-recognition models. Please reload and try again.");
+        setLoadError("ChessEye could not load its board-recognition models. Please reload and try again.");
       });
   }, []);
 

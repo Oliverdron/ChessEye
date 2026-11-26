@@ -21,7 +21,7 @@ export const buildPgn = ({ start, moves, result, white, black, date }: {
 }): string => {
   const tags: [string, string][] = [
     ["Event", "Casual game"],
-    ["Site", "ChessCam"],
+    ["Site", "ChessEye"],
     ["Date", formatDate(date)],
     ["White", tagValue(white) || "?"],
     ["Black", tagValue(black) || "?"],

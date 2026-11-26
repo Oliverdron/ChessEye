@@ -174,8 +174,8 @@ const RecordPage = () => {
       setProblem({
         title: "Can't start recording yet",
         cause: mirrored
-          ? "The corner labels are mirrored, so ChessCam would not recognise any piece."
-          : "The board corners haven't been found, so ChessCam can't read the squares.",
+          ? "The corner labels are mirrored, so ChessEye would not recognise any piece."
+          : "The board corners haven't been found, so ChessEye can't read the squares.",
         fix: "Go to Board corners and press Find corners. All four corners must be visible to the camera.",
         action: { label: "Go to Board corners", run: goToCorners }
       });

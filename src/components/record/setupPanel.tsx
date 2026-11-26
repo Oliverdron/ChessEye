@@ -96,7 +96,7 @@ const SetupPanel = (props: SetupPanelProps) => {
         <>
           <h2 id="cc-step-title">Find the board corners</h2>
           <p className="cc-muted" style={{ color: "var(--cc-text-2)" }}>
-            ChessCam needs the four corners to know where each square is. Set up the pieces and keep
+            ChessEye needs the four corners to know where each square is. Set up the pieces and keep
             your hands off the board.
           </p>
           <button type="button" className="cc-btn" style={{ minHeight: 56, fontSize: 17 }}
