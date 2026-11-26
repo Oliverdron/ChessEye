@@ -1,3 +1,19 @@
+# ChessEye
+
+ChessEye records a game of chess played on an ordinary board. A phone or webcam above the board recognises
+every move and writes the game down as PGN, and the players start and end the recording by shaking hands
+over the board. It was built as a four-person group project for CS3483 Multimodal Interface Design at
+City University of Hong Kong (Semester A 2026/27).
+
+ChessEye is built on [ChessCam](https://github.com/Pbatch/CameraChessWeb) by Pbatch and contributors
+(GNU AGPL-3.0), which provides the board, piece and move recognition. What we added is listed under
+[Our modifications](#our-modifications-cs3483-multimodal-interface-design-cityu) below; the rest of this
+README is ChessCam's original documentation.
+
+**Run it locally:** `npm install`, then `npm start`, and open the printed localhost address in Chrome.
+
+---
+
 <div align="center">
 
 📌 This app is under active development and may experience minor issues.  
